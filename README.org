@@ -1,2 +1,27 @@
 * Introduction
 This is the basic settings that I use to bootstrap a new oTree project.
+* Commands to run
+#+begin_src bash
+rm ./.gitattributes
+rm -r ./.github
+rm ./.gitignore
+rm ./.isort.cfg
+rm ./.pre-commit-config.yaml
+rm ./.slugignore
+rm ./Procfile
+rm ./requirements.txt
+rm ./resetdb.sh
+rm ./runtime.txt
+#+end_src
+#+begin_src bash
+ln -s ./otree-exp-setup/.gitattributes ./.gitattributes
+ln -s ./otree-exp-setup/.github ./.github
+ln -s ./otree-exp-setup/.gitignore ./.gitignore
+ln -s ./otree-exp-setup/.isort.cfg ./.isort.cfg
+ln -s ./otree-exp-setup/.pre-commit-config.yaml ./.pre-commit-config.yaml
+ln -s ./otree-exp-setup/.slugignore ./.slugignore
+ln -s ./otree-exp-setup/Procfile ./Procfile
+ln -s ./otree-exp-setup/requirements.txt ./requirements.txt
+ln -s ./otree-exp-setup/resetdb.sh ./resetdb.sh
+ln -s ./otree-exp-setup/runtime.txt ./runtime.txt
+#+end_src
