@@ -1,0 +1,62 @@
+name: continous integration
+
+on: push
+
+jobs:
+  build:
+
+    env:
+      SECRET_KEY: TEST
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8]
+
+    steps:
+    - name: Set production off
+      if: endsWith(github.ref, '/dev')
+      run: |
+        echo "OTREE_PRODUCTION=0" >> $GITHUB_ENV
+    - name: Set env to production
+      if: endsWith(github.ref, '/master')
+      run: |
+        echo "OTREE_PRODUCTION=1" >> $GITHUB_ENV
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: check out current branch
+      uses: actions/checkout@v2
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Test
+      run: |
+        otree test experiment
+
+    - name: Checkout master if on dev
+      if: endsWith(github.ref, '/dev')
+      uses: actions/checkout@v2
+      with:
+        ref: master
+    - name: Reset dev branch
+      run: |
+        git fetch origin dev:dev
+        git reset --hard dev
+    - name: Create Pull Request
+      if: endsWith(github.ref, '/dev')
+      id: cpr
+      uses: peter-evans/create-pull-request@v3
+      with:
+        branch: master-promotion
+        # see: https://github.com/pascalgn/automerge-action/issues/131#issuecomment-843077111
+        # for why we need to use same personal access token for all workflows.
+        token: "${{ secrets.GITHUB_TOKEN }}"

@@ -1,0 +1,2 @@
+* Introduction
+This is the basic settings that I use to bootstrap a new oTree project.
